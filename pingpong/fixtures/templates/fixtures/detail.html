@@ -1,6 +1,7 @@
 <html>
 <head>
-
+<style>
+</style>
 </head>
 
 <body>
@@ -24,50 +25,52 @@
         <td>
           <table rules="cols" width="100px" height="100px">
             <tr align="center">
-              {% for game in onegame %}
-              {% if game.player_A == rp and game.player_B == cp %}
-              {% if game.A_win_set == 3 or game.B_win_set == 3 %}{% if game.is_A_win %}
-              <td colspan=5 style="background-color:yellow;">{{ game.A_win_set }}</td>
+              {% for item in mixedls %}
+              {% with A=item.0.0.0 B=item.0.1.0 Aset=item.0.0.1 Bset=item.0.1.1 %}
+              {% with Agains=item.1.0 Bgains=item.1.1 ABgains=item.1 isAwin=item.2 %}]
+              
+              {% if A == rp and B == cp %}
+              {% if isAwin and Aset >= 3 or isAwin and Bset >= 3 %}
+              <td colspan=5 style="background-color:yellow;">{{ Aset }}</td>
               <td style="background-color:yellow;">
                 {% else %}
-                <td colspan=5>{{ game.A_win_set }}</td>
+                <td colspan=5>{{ Aset }}</td>
                 <td>
-                  {% endif %}{% endif %}
-                  {% for st in settable %}
-                  {% for s in st %}
-                  {% if s.game_No == game %}
-                  {{ s.A_gain }} - {{ s.B_gain }} <br>
                   {% endif %}
-                  {% endfor %}
-                  {% endfor %}
+                  {% for ag in Agains %}{% for bg in Bgains %}
+                  {% if forloop.counter0 == forloop.parentloop.counter0 %}
+                  <span class="gamecell">{{ ag }} - {{ bg }}</span> <br>
+                  {% endif %}
+                  {% endfor %}{% endfor %}
                 </td>
-                {% if game.A_win_set == 3 or game.B_win_set %}{% if game.is_A_win %}
-                <td colspan=5 style="background-color:yellow;">{{ game.B_win_set }}</td>
+                {% if isAwin and Aset >= 3 or isAwin and Bset >= 3 %}
+                <td colspan=5 style="background-color:yellow;">{{ Bset }}</td>
                 {% else %}
-                <td colspan=5>{{ game.B_win_set }}</td>
-                {% endif %}{% endif %}
-                {% elif game.player_A == cp and game.player_B == rp %}
-                {% if game.A_win_set == 3 or game.B_win_set == 3 %}{% if not game.is_A_win %}
-                <td colspan=5 style="background-color:yellow;">{{ game.B_win_set }}</td>
+                <td colspan=5>{{ Bset }}</td>
+                {% endif %}
+
+                {% elif A == cp and B == rp %}
+                {% if not isAwin and Aset >= 3 or not isAwin and Bset >= 3%}
+                <td colspan=5 style="background-color:yellow;">{{ Bset }}</td>
                 <td style="background-color:yellow;">
                   {% else %}
-                  <td colspan=5>{{ game.B_win_set }}</td>
+                  <td colspan=5>{{ Bset }}</td>
                   <td>
-                    {% endif %}{% endif %}
-                    {% for st in settable %}
-                    {% for s in st %}
-                    {% if s.game_No == game %}
-                    {{ s.B_gain }} - {{ s.A_gain }} <br>
                     {% endif %}
-                    {% endfor %}
-                    {% endfor %}
+                    {% for ag in Agains %}{% for bg in Bgains %}
+                    {% if forloop.counter0 == forloop.parentloop.counter0 %}
+                    <span class="gamecell">{{ bg }} - {{ ag }}</span> <br>
+                    {% endif %}
+                    {% endfor %}{% endfor %}
                   </td>
-                  {% if game.A_win_set == 3 or game.B_win_set %}{% if not game.is_A_win %}
-                  <td colspan=5 style="background-color:yellow;">{{ game.A_win_set }}</td>
+                  {% if not isAwin and Aset >= 3 or not isAwin and Bset >= 3%}
+                  <td colspan=5 style="background-color:yellow;">{{ Aset }}</td>
                   {% else %}
-                  <td colspan=5>{{ game.A_win_set }}</td>
-                  {% endif %}{% endif %}
+                  <td colspan=5>{{ Aset }}</td>
                   {% endif %}
+
+                  {% endif %}
+                  {% endwith %}{% endwith %}
                   {% endfor %}
                 </tr>
               </table>

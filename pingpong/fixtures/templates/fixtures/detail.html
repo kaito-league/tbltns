@@ -17,7 +17,7 @@
       {% for p in players %}
       <th>{{ p.p_name }}</th>
       {% endfor %}
-      <th>勝ち</th><th>負け</th><th>順位</th>
+      <th>勝ち</th><th>負け</th><th>セット獲得率</th><th>得点獲得率</th><th>順位</th>
     </tr>
     <tbody>
       {% for rp in players %} <!-- row player -->
@@ -101,6 +101,8 @@
             {% endfor %}
             <td align="center">{{ rp.win_num }}</td>
             <td align="center">{{ rp.lose_num }}</td>
+            <td align="center">{{ rp.set_rate }}</td>
+            <td align="center">{{ rp.points_rate}}</td>
             <td>1</td>
           </tr>
           {% endfor %}

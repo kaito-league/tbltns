@@ -53,7 +53,6 @@ def detail(request, pk):
         "onegame": onegame,
         "mixedls": mixedls,
         "gameset": sorted([x for x in SetTable.objects.all()], key=lambda x: x.set_No),
-        "five": [1,2,3,4,5],
     })
 
 

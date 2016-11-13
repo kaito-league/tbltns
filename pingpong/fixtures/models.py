@@ -43,11 +43,9 @@ class Player(models.Model):
         self.total_win_set_num = self.alike_total_win_set_num
         self.total_lose_set_num = self.alike_total_lose_set_num
         try:
-            self.total_win_set_num/self.total_lose_set_num
+            self.set_rate = self.total_win_set_num/(self.total_lose_set_num + self.total_win_set_num)*100
         except ZeroDivisionError:
             self.set_rate = 0
-        else:
-            self.set_rate = self.total_win_set_num/self.total_lose_set_num
 
     def __various_num_asA(self):
         wn, ln, wsn, lsn = 0, 0, 0, 0  # win_num, lose_num, total_win_set_num, total_lose_set_num
@@ -65,12 +63,6 @@ class Player(models.Model):
         self.alike_lose_num += ln  # Aの負け数を加算
         self.alike_total_win_set_num += wsn
         self.alike_total_lose_set_num += lsn
-        try:
-            self.total_win_set_num/self.total_lose_set_num
-        except ZeroDivisionError:
-            self.set_rate = 0
-        else:
-            self.set_rate = self.total_win_set_num/self.total_lose_set_num
 
     def __various_num_asB(self):
         wn, ln, wsn, lsn = 0, 0, 0, 0
@@ -99,11 +91,9 @@ class Player(models.Model):
         self.total_win_points = self.alike_total_win_points
         self.total_lose_points = self.alike_total_lose_points
         try:
-            self.total_win_points/self.total_lose_points
+            self.points_rate = self.total_win_points/(self.total_lose_points + self.total_win_points)*100
         except ZeroDivisionError:
             self.points_rate = 0
-        else:
-            self.points_rate = self.total_win_points/self.total_lose_points
 
     def __gain_num_asA(self):
         wp, lp = 0, 0
@@ -131,7 +121,6 @@ class Player(models.Model):
 
 class OneGame(models.Model):
     """ ある試合のデータ """
-    # pk を試合idとする
     league = models.ForeignKey(League)
     player_A = models.ForeignKey(Player, related_name="player_A")  # Aが自分
     player_B = models.ForeignKey(Player, related_name="player_B")  # Bは敵, という設定
@@ -172,7 +161,7 @@ class SetTable(models.Model):
     __slots__ = ["__str__", "game_No", "set_No", "A_gain", "B_gain"]
 
     def __str__(self):
-        return "第%d試合 第%dセット"%(self.game_No.pk, self.set_No)
+        return self.game_No.league
 
 
 class Participants(models.Model):

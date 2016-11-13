@@ -1,12 +1,17 @@
 <html>
 <head>
 <style>
+.spin {
+  width: 30px;
+  height: 20px;
+}
 </style>
 </head>
 
 <body>
   <strong>{{ league.league_name }}</strong>
   <a href="{% url 'league:index' %}">戻る</a>
+  <form action="POST" method=""> <!-- データベースに反映するためのviewを適当に書くべし -->
   <table border="1">
     <tr><th></th>
       {% for p in players %}
@@ -27,8 +32,8 @@
             <tr align="center">
               {% for item in mixedls %}
               {% with A=item.0.0.0 B=item.0.1.0 Aset=item.0.0.1 Bset=item.0.1.1 %}
-              {% with Agains=item.1.0 Bgains=item.1.1 ABgains=item.1 isAwin=item.2 %}]
-              
+              {% with Agains=item.1.0 Bgains=item.1.1 ABgains=item.1 isAwin=item.2 %}
+
               {% if A == rp and B == cp %}
               {% if isAwin and Aset >= 3 or isAwin and Bset >= 3 %}
               <td colspan=5 style="background-color:yellow;">{{ Aset }}</td>
@@ -39,9 +44,18 @@
                   {% endif %}
                   {% for ag in Agains %}{% for bg in Bgains %}
                   {% if forloop.counter0 == forloop.parentloop.counter0 %}
-                  <span class="gamecell">{{ ag }} - {{ bg }}</span> <br>
+                  {% if ag == 0 and bg == 0 %}
+                  {% if Aset < 3 and Bset < 3 %}
+                  <span class="gamecell">
+                    <input class="spin" type="number" size="2"> - <input class="spin" type="number" size="2">
+                  </span>
                   {% endif %}
-                  {% endfor %}{% endfor %}
+                  {% else %}
+                  <span class="gamecell">{{ ag }} - {{ bg }}</span> <br><!-- ここにinput type=spin　とかしたい -->
+                  {% endif %}
+                  {% endif %}
+                  {% endfor %}
+                  {% endfor %}
                 </td>
                 {% if isAwin and Aset >= 3 or isAwin and Bset >= 3 %}
                 <td colspan=5 style="background-color:yellow;">{{ Bset }}</td>
@@ -59,7 +73,15 @@
                     {% endif %}
                     {% for ag in Agains %}{% for bg in Bgains %}
                     {% if forloop.counter0 == forloop.parentloop.counter0 %}
-                    <span class="gamecell">{{ bg }} - {{ ag }}</span> <br>
+                    {% if ag == 0 and bg == 0 %}
+                    {% if Aset < 3 and Bset < 3 %}
+                    <span class="gamecell">
+                      <input class="spin" type="number" size="2"> - <input class="spin" type="number" size="2">
+                    </span>
+                    {% endif %}
+                    {% else %}
+                    <span class="gamecell">{{ ag }} - {{ bg }}</span> <br>
+                    {% endif %}
                     {% endif %}
                     {% endfor %}{% endfor %}
                   </td>
@@ -77,12 +99,14 @@
             </td>
             {% endif %}
             {% endfor %}
-            <td>{{ rp.win_num }}</td>
-            <td>{{ rp.lose_num }}</td>
+            <td align="center">{{ rp.win_num }}</td>
+            <td align="center">{{ rp.lose_num }}</td>
             <td>1</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
-    </body>
-    </html>
+      <input type="submit" name="updatedb" value="反映する">
+    </form>
+  </body>
+  </html>

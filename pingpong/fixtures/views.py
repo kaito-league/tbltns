@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, reverse
 from fixtures.models import *
 
 
@@ -19,7 +19,8 @@ def createmixture(onegame):  # templateを楽にわかりやすく書くため�
 def get_ABgain_from_onegame(game, letter):
     filter_ = SetTable.objects.filter
     dct = {"A": [x.A_gain for x in filter_(game_No=game)], "B": [x.B_gain for x in filter_(game_No=game)]}
-    return dct[letter]
+    padding = game.A_win_set + game.B_win_set
+    return dct[letter] + [0 for i in range(5 - padding)]
 
 
 # 以下views
@@ -52,8 +53,13 @@ def detail(request, pk):
         "onegame": onegame,
         "mixedls": mixedls,
         "gameset": sorted([x for x in SetTable.objects.all()], key=lambda x: x.set_No),
+        "five": [1,2,3,4,5],
     })
 
 
-def regist(request):
+def league_regist(request):
     return render(request, "fixtures/league_regist.html")
+
+
+def league_complete(request):
+    return redirect(reverse("league:index"))

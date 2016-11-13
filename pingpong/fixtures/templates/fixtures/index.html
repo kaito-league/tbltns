@@ -1,0 +1,17 @@
+<html>
+<body>
+  <table border="1">
+    <tr><th>大会名</th><th>日時</th><th>参加人数</th><th>優勝者</th><th></th></tr>
+      {% for l in league %}
+      <tr>
+        <td>{{ l.league_name }}</td>
+        <td>{{ l.league_date }}</td>
+        <td>{{ l.num_of_participant }}</td>
+        <td>{{ l.whole_winner }}</td>
+        <td><a href="{% url 'league:detail' l.pk %}">表を見る</a></td>
+      </tr>
+      {% endfor %}
+    </table>
+    <a href="{% url 'league:regist' %}">新規作成する</a>
+  </body>
+</html>

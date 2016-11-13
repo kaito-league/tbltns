@@ -1,0 +1,85 @@
+<html>
+<head>
+
+</head>
+
+<body>
+  <strong>{{ league.league_name }}</strong>
+  <a href="{% url 'league:index' %}">戻る</a>
+  <table border="1">
+    <tr><th></th>
+      {% for p in players %}
+      <th>{{ p.p_name }}</th>
+      {% endfor %}
+      <th>勝ち</th><th>負け</th><th>順位</th>
+    </tr>
+    <tbody>
+      {% for rp in players %} <!-- row player -->
+      <tr>
+        <th>{{ rp.p_name }}</th>
+        {% for cp in players %}  <!-- column player -->
+        {% if rp.p_name == cp.p_name %}
+        <td style="background-color:black"></td>
+        {% else %}
+        <td>
+          <table rules="cols" width="100px" height="100px">
+            <tr align="center">
+              {% for game in onegame %}
+              {% if game.player_A == rp and game.player_B == cp %}
+              {% if game.A_win_set == 3 or game.B_win_set == 3 %}{% if game.is_A_win %}
+              <td colspan=5 style="background-color:yellow;">{{ game.A_win_set }}</td>
+              <td style="background-color:yellow;">
+                {% else %}
+                <td colspan=5>{{ game.A_win_set }}</td>
+                <td>
+                  {% endif %}{% endif %}
+                  {% for st in settable %}
+                  {% for s in st %}
+                  {% if s.game_No == game %}
+                  {{ s.A_gain }} - {{ s.B_gain }} <br>
+                  {% endif %}
+                  {% endfor %}
+                  {% endfor %}
+                </td>
+                {% if game.A_win_set == 3 or game.B_win_set %}{% if game.is_A_win %}
+                <td colspan=5 style="background-color:yellow;">{{ game.B_win_set }}</td>
+                {% else %}
+                <td colspan=5>{{ game.B_win_set }}</td>
+                {% endif %}{% endif %}
+                {% elif game.player_A == cp and game.player_B == rp %}
+                {% if game.A_win_set == 3 or game.B_win_set == 3 %}{% if not game.is_A_win %}
+                <td colspan=5 style="background-color:yellow;">{{ game.B_win_set }}</td>
+                <td style="background-color:yellow;">
+                  {% else %}
+                  <td colspan=5>{{ game.B_win_set }}</td>
+                  <td>
+                    {% endif %}{% endif %}
+                    {% for st in settable %}
+                    {% for s in st %}
+                    {% if s.game_No == game %}
+                    {{ s.B_gain }} - {{ s.A_gain }} <br>
+                    {% endif %}
+                    {% endfor %}
+                    {% endfor %}
+                  </td>
+                  {% if game.A_win_set == 3 or game.B_win_set %}{% if not game.is_A_win %}
+                  <td colspan=5 style="background-color:yellow;">{{ game.A_win_set }}</td>
+                  {% else %}
+                  <td colspan=5>{{ game.A_win_set }}</td>
+                  {% endif %}{% endif %}
+                  {% endif %}
+                  {% endfor %}
+                </tr>
+              </table>
+            </td>
+            {% endif %}
+            {% endfor %}
+            <td>{{ rp.win_num }}</td>
+            <td>{{ rp.lose_num }}</td>
+            <td>1</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </body>
+    </html>

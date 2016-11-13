@@ -1,0 +1,12 @@
+<html>
+<body>
+  <h3>選手登録ページ</h3>
+  <h5>名前を入力してください</h5>
+  <form>
+  {% for i in num_of_participant %}
+  <input type="text" name="register_{{ i }}"> <br>
+  {% endfor %}
+  <input type="button" value="登録">
+</form>
+</body>
+</html>

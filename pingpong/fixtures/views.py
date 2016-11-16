@@ -65,19 +65,20 @@ def player_regist(request, pk):
 
 
 def player_complete(request):
-    league = League.objects.get(pk=int(request.POST["pk"]))
+    if request.method == "POST":
+        league = League.objects.get(pk=int(request.POST["pk"]))
 
-    for ky, val in request.POST.items():
-        if ky == "pk" or ky == "csrfmiddlewaretoken":  # csrfも評価するので
-            continue
-        new_player = Player()
-        new_participant = Participants()
-        new_player.p_name = val
-        new_player.save()
+        for ky, val in request.POST.items():
+            if ky == "pk" or ky == "csrfmiddlewaretoken":  # csrfも評価するので
+                continue
+            new_player = Player()
+            new_participant = Participants()
+            new_player.p_name = val
+            new_player.save()
 
-        new_participant.player = new_player  # Participantsに選手を登録
-        new_participant.league = league  # Participantsにリーグ登録
-        new_participant.save()
+            new_participant.player = new_player  # Participantsに選手を登録
+            new_participant.league = league  # Participantsにリーグ登録
+            new_participant.save()
 
     return redirect(reverse("league:index"))
 
@@ -87,10 +88,13 @@ def league_regist(request):
 
 
 def league_complete(request):
-    newleague = League()
-    post = request.POST
-    newleague.league_name = post["league_name"]
-    newleague.league_date = post["league_date"]
-    newleague.num_of_participant = post["league_participant"]
-    newleague.save()
-    return redirect(reverse("league:p_regist", kwargs={"pk": newleague.pk}))
+    if request.method == "POST":
+        newleague = League()
+        post = request.POST
+        newleague.league_name = post["league_name"]
+        newleague.league_date = post["league_date"]
+        newleague.num_of_participant = post["league_participant"]
+        newleague.save()
+        return redirect(reverse("league:p_regist", kwargs={"pk": newleague.pk}))
+    else:
+        return redirect(reverse("league:index"))

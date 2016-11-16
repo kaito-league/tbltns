@@ -25,6 +25,11 @@ class Player(models.Model):
     total_lose_points = models.PositiveIntegerField("総喪失得点", default=0)
     points_rate = models.FloatField("得点率" , default=0.0)  # or DecimalField
 
+    __slots__ = [
+        "p_name", "win_num", "lose_num", "total_win_set_num", "total_lose_set_num",
+        "set_rate", "total_win_points", "total_lose_points", "points_rate",
+    ]
+
     def calc_various_num(self):
         """
          勝ち試合数, 負け試合数, 勝利セット数, 敗北セット数, セット率を計算
@@ -165,11 +170,16 @@ class SetTable(models.Model):
 
 
 class Participants(models.Model):
-    """ 大会参加者の名前だけを保持するテーブル """
+    """
+    大会参加者の名前だけを保持するテーブル
+    このままだと league:player が1:1の関係でレコードが作られる. これだと同じleagueが何個も登場することに...
+    個人的には league:[player, player, ..., player] という感じがいい.
+    jsonを使えばできるっぽい > http://stackoverflow.com/questions/22340258/django-list-field-in-model
+    """
     league = models.ForeignKey(League)
     player = models.ForeignKey(Player)
 
-    __slots__ = ["__str__", "lesgue", "player"]
+    __slots__ = ["league", "player"]
 
     def __str__(self):
-        return self.league.league_name
+        return self.player.p_name

@@ -101,8 +101,8 @@
             {% endfor %}
             <td align="center">{{ rp.win_num }}</td>
             <td align="center">{{ rp.lose_num }}</td>
-            <td align="center">{{ rp.set_rate }}</td>
-            <td align="center">{{ rp.points_rate}}</td>
+            <td align="center">{{ rp.set_rate|floatformat:"-2" }}</td>
+            <td align="center">{{ rp.points_rate|floatformat:"-2" }}</td>
             <td>1</td>
           </tr>
           {% endfor %}

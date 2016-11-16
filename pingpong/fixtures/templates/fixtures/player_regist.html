@@ -1,0 +1,17 @@
+<html>
+<body>
+  <h4>選手を登録して下さい</h4>
+  <form method="POST" action="{% url 'league:p_comp' %}">
+    {% csrf_token %}
+    <ul>
+      {% for n in number %}
+      <li>
+        <input type="text" name="p{{ n }}"></input>
+      </ui>
+      {% endfor %}
+    </ul>
+    <input type="hidden" name="pk" value="{{ pk }}">
+    <input type="submit" value="選手を登録する">
+  </form>
+</body>
+</html>

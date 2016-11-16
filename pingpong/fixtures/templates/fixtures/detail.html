@@ -1,3 +1,5 @@
+{% load my_tags %}
+
 <html>
 <head>
 <style>
@@ -35,15 +37,14 @@
               {% with Agains=item.1.0 Bgains=item.1.1 ABgains=item.1 isAwin=item.2 %}
 
               {% if A == rp and B == cp %}
-              {% if isAwin and Aset >= 3 or isAwin and Bset >= 3 %}
+              {% if isAwin and Aset >= 3 or isAwin and Bset >= 3 %} <!-- 黄色くする処理 -->
               <td colspan=5 style="background-color:yellow;">{{ Aset }}</td>
               <td style="background-color:yellow;">
                 {% else %}
                 <td colspan=5>{{ Aset }}</td>
                 <td>
                   {% endif %}
-                  {% for ag in Agains %}{% for bg in Bgains %}
-                  {% if forloop.counter0 == forloop.parentloop.counter0 %}
+                  {% for ag, bg in ABgains|myzip %}  <!-- ユーザ定義filter-->
                   {% if ag == 0 and bg == 0 %}
                   {% if Aset < 3 and Bset < 3 %}
                   <span class="gamecell">
@@ -51,10 +52,8 @@
                   </span>
                   {% endif %}
                   {% else %}
-                  <span class="gamecell">{{ ag }} - {{ bg }}</span> <br><!-- ここにinput type=spin　とかしたい -->
+                  <span class="gamecell">{{ ag }} - {{ bg }}</span> <br>
                   {% endif %}
-                  {% endif %}
-                  {% endfor %}
                   {% endfor %}
                 </td>
                 {% if isAwin and Aset >= 3 or isAwin and Bset >= 3 %}
@@ -71,8 +70,7 @@
                   <td colspan=5>{{ Bset }}</td>
                   <td>
                     {% endif %}
-                    {% for ag in Agains %}{% for bg in Bgains %}
-                    {% if forloop.counter0 == forloop.parentloop.counter0 %}
+                    {% for bg, ag in ABgains|myzip %}
                     {% if ag == 0 and bg == 0 %}
                     {% if Aset < 3 and Bset < 3 %}
                     <span class="gamecell">
@@ -82,8 +80,7 @@
                     {% else %}
                     <span class="gamecell">{{ ag }} - {{ bg }}</span> <br>
                     {% endif %}
-                    {% endif %}
-                    {% endfor %}{% endfor %}
+                    {% endfor %}
                   </td>
                   {% if not isAwin and Aset >= 3 or not isAwin and Bset >= 3%}
                   <td colspan=5 style="background-color:yellow;">{{ Aset }}</td>
@@ -101,7 +98,7 @@
             {% endfor %}
             <td align="center">{{ rp.win_num }}</td>
             <td align="center">{{ rp.lose_num }}</td>
-            <td align="center">{{ rp.set_rate|floatformat:"-2" }}</td>
+            <td align="center">{{ rp.set_rate|floatformat:"-2" }}</td>  <!-- 小数点第二位まで -->
             <td align="center">{{ rp.points_rate|floatformat:"-2" }}</td>
             <td>1</td>
           </tr>

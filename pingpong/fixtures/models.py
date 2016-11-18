@@ -1,18 +1,6 @@
 from django.db import models
 
 
-# Create your models here.
-class League(models.Model):
-    """ 大会の情報 """
-    league_name = models.CharField("リーグの名前", max_length=20)
-    league_date = models.DateField("大会年月日")
-    num_of_participant = models.PositiveSmallIntegerField("参加人数")
-    whole_winner = models.CharField("大会優勝者", max_length=20, blank=True, null=True)
-
-    def __str__(self):
-        return self.league_name
-
-
 class Player(models.Model):
     """ 大会参加者の勝敗データを保持するテーブル """
     p_name = models.CharField("参加者名", max_length=20)
@@ -24,6 +12,7 @@ class Player(models.Model):
     total_win_points = models.PositiveIntegerField("総獲得得点", default=0)
     total_lose_points = models.PositiveIntegerField("総喪失得点", default=0)
     points_rate = models.FloatField("得点率" , default=0.0)  # or DecimalField
+    rank = models.PositiveSmallIntegerField("順位", default=1)
 
     __slots__ = [
         "p_name", "win_num", "lose_num", "total_win_set_num", "total_lose_set_num",
@@ -124,6 +113,18 @@ class Player(models.Model):
         return self.p_name
 
 
+# Create your models here.
+class League(models.Model):
+    """ 大会の情報 """
+    league_name = models.CharField("リーグの名前", max_length=20)
+    league_date = models.DateField("大会年月日")
+    num_of_participant = models.PositiveSmallIntegerField("参加人数")
+    whole_winner = models.ForeignKey(Player, blank=True, null=True)
+
+    def __str__(self):
+        return self.league_name
+
+
 class OneGame(models.Model):
     """ ある試合のデータ """
     league = models.ForeignKey(League)
@@ -153,6 +154,12 @@ class OneGame(models.Model):
     def which_win(self):
         self.is_A_win = True if self.A_win_set > self.B_win_set else False
 
+    def AvsBatleague(self, league, A, B):
+        self.league = league
+        self.player_A = A
+        self.player_B = B
+        self.save()
+
     def __str__(self):
         return "%s vs %s"%(self.player_A.p_name, self.player_B.p_name)
 
@@ -166,7 +173,7 @@ class SetTable(models.Model):
     __slots__ = ["__str__", "game_No", "set_No", "A_gain", "B_gain"]
 
     def __str__(self):
-        return self.game_No.league
+        return self.game_No.league.league_name
 
 
 class Participants(models.Model):

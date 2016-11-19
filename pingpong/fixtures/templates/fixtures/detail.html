@@ -1,10 +1,10 @@
 {% load my_tags %}
-
+<!DOCTYPE html>
 <html>
 <head>
 <style>
 .spin {
-  width: 30px;
+  width: 25px;
   height: 20px;
 }
 </style>
@@ -13,6 +13,7 @@
 <body>
   {% spaceless %}
   <strong>{{ league.league_name }}</strong>
+  <h1>優勝者: {{ league.whole_winner }}</h1>
   <a href="{% url 'league:index' %}">戻る</a>
   <form method="POST" action="{% url 'league:redraw_ltable' league.pk %}">
     {% csrf_token %}
@@ -51,8 +52,8 @@
                   {% if ag == 0 and bg == 0 %}
                   {% if Aset < 3 and Bset < 3 %}
                   <span class="gamecell">
-                    <input class="spin" type="number" name="a/{{ rp }}/{{ cp }}/{{ forloop.counter }}" value="0" size="2"> -
-                    <input class="spin" type="number" name="b/{{ rp }}/{{ cp }}/{{ forloop.counter }}" value="0" size="2">
+                    <input class="spin" type="number" name="a/{{ rp }}/{{ cp }}/{{ forloop.counter }}" value="0" size="2" min="0"> -
+                    <input class="spin" type="number" name="b/{{ rp }}/{{ cp }}/{{ forloop.counter }}" value="0" size="2" min="0">
                   </span>
                   {% endif %}
                   {% else %}

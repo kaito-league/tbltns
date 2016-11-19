@@ -19,96 +19,6 @@ class Player(models.Model):
         "set_rate", "total_win_points", "total_lose_points", "points_rate",
     ]
 
-    def calc_various_num(self):
-        """
-         勝ち試合数, 負け試合数, 勝利セット数, 敗北セット数, セット率を計算
-         このへんとても冗長なのでなんとかしたい
-        """
-
-        self.alike_win_num = 0
-        self.alike_lose_num = 0
-        self.alike_total_win_set_num = 0
-        self.alike_total_lose_set_num = 0
-        self.__various_num_asA()
-        self.__various_num_asB()
-
-        self.win_num = self.alike_win_num
-        self.lose_num = self.alike_lose_num
-        self.total_win_set_num = self.alike_total_win_set_num
-        self.total_lose_set_num = self.alike_total_lose_set_num
-        try:
-            self.set_rate = self.total_win_set_num/(self.total_lose_set_num + self.total_win_set_num)*100
-        except ZeroDivisionError:
-            self.set_rate = 0
-
-    def __various_num_asA(self):
-        wn, ln, wsn, lsn = 0, 0, 0, 0  # win_num, lose_num, total_win_set_num, total_lose_set_num
-        for game in OneGame.objects.filter(player_A=self):
-            a_wins = game.A_win_set  # A獲得セット数
-            b_wins = game.B_win_set  # B獲得セット数(A喪失セット数)
-
-            wsn += a_wins
-            lsn += b_wins
-            if (a_wins == 3 or b_wins == 3) and a_wins > b_wins:
-                wn += 1
-            elif (a_wins == 3 or b_wins == 3) and a_wins < b_wins:
-                ln += 1
-        self.alike_win_num += wn  # Aの勝ち数を加算
-        self.alike_lose_num += ln  # Aの負け数を加算
-        self.alike_total_win_set_num += wsn
-        self.alike_total_lose_set_num += lsn
-
-    def __various_num_asB(self):
-        wn, ln, wsn, lsn = 0, 0, 0, 0
-        for game in OneGame.objects.filter(player_B=self):
-            a_wins = game.B_win_set
-            b_wins = game.A_win_set
-
-            wsn += a_wins
-            lsn += b_wins
-            if (a_wins == 3 or b_wins == 3) and a_wins > b_wins:
-                wn += 1
-            elif (a_wins == 3 or b_wins == 3) and a_wins < b_wins:
-                ln += 1
-        self.alike_win_num += wn
-        self.alike_lose_num += ln
-        self.alike_total_win_set_num += wsn
-        self.alike_total_lose_set_num += lsn
-
-    def calc_gain_num(self):
-        """ total point数を計算 """
-        self.alike_total_win_points = 0
-        self.alike_total_lose_points = 0
-        self.__gain_num_asA()
-        self.__gain_num_asB()
-
-        self.total_win_points = self.alike_total_win_points
-        self.total_lose_points = self.alike_total_lose_points
-        try:
-            self.points_rate = self.total_win_points/(self.total_lose_points + self.total_win_points)*100
-        except ZeroDivisionError:
-            self.points_rate = 0
-
-    def __gain_num_asA(self):
-        wp, lp = 0, 0
-        # 二重ループは嫌や...
-        for game in OneGame.objects.filter(player_A=self):
-            for gain in SetTable.objects.filter(game_No=game):
-                wp += gain.A_gain
-                lp += gain.B_gain
-        self.alike_total_win_points += wp
-        self.alike_total_lose_points += lp
-
-    def __gain_num_asB(self):
-        wp, lp = 0, 0
-        # 二重ループは嫌や...
-        for game in OneGame.objects.filter(player_B=self):
-            for gain in SetTable.objects.filter(game_No=game):
-                wp += gain.B_gain
-                lp += gain.A_gain
-        self.alike_total_win_points += wp
-        self.alike_total_lose_points += lp
-
     def __str__(self):
         return self.p_name
 
@@ -137,28 +47,6 @@ class OneGame(models.Model):
     def get_SetTable(self):
         """ for calc_gain_num """
         return SetTable.objects.filter(game_No=self)
-
-    def calc_set_num(self):
-        ws, ls = 0, 0
-        for gain in SetTable.objects.filter(game_No=self):
-            if gain.A_gain > gain.B_gain:
-                ws += 1
-            else:
-                ls += 1
-        self.A_win_set = ws
-        self.B_win_set = ls
-
-        if self.A_win_set == 3 or self.B_win_set == 3:
-            self.which_win()
-
-    def which_win(self):
-        self.is_A_win = True if self.A_win_set > self.B_win_set else False
-
-    def AvsBatleague(self, league, A, B):
-        self.league = league
-        self.player_A = A
-        self.player_B = B
-        self.save()
 
     def __str__(self):
         return "%s vs %s"%(self.player_A.p_name, self.player_B.p_name)
